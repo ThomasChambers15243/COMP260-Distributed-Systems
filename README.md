@@ -71,6 +71,7 @@ Development will take 2 months with 2 weeks prep time. There's is contingency sp
 
 [6] F. Poletti, N. V. Wheeler, M. N. Petrovich, N. Baddela, E. Numkam Fokoua, J. R. Hayes, D. R. Gray, Z. Li, R. Slavík, and D. J. Richardson, “Towards high-capacity fibre-optic communications at the speed of light in vacuum,” _Nature Photonics_, vol. 7, no. 4, pp. 279–284, 2013.
 
-[7] P. Kuittinen, “Very Important Game People in the History of Computer and Video Games,” thesis, 2006. 
+[7] P. Kuittinen, “Very Important Game People in the History of Computer and Video Games,” thesis, n University
+of Art and Design Helsinki, 2006. 
 
-[8] A. Ehlert, ‘Improving Input Prediction in Online Fighting Games’, Dissertation, 2021.
+[8] A. Ehlert, ‘Improving Input Prediction in Online Fighting Games’, Dissertation, KTH, School of Electrical Engineering and Computer Science, 2021.
