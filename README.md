@@ -20,7 +20,7 @@ Latency is the term given when there is any delay in a network. In games, this o
 
 ## Netcode
 
-The standard[4], *old-school* attempt at connecting two players was through a peer-to-peer topology. This progressed onto server-client with an authoritative host. While both are still used today, the standard is server-client with an authoritative dedicated game server, this is the topology I will be using, as it can handle lots of different players connecting [3] while being more economically viable than large-scale cloud options as a student. Different netcode solutions can be implemented on top of these topologies, these are the methods I will compare against one another.
+The standard[4], *old-school* attempt at connecting two players was through a peer-to-peer topology. This worked well for local games, such as Doom, but progressed onto a server-client solution with Quake[7], which provided a much better player experience. While both are still used today, the standard is server-client with an authoritative dedicated game server, this is the topology I will be using, as it can handle lots of different players connecting [3] while being more economically viable than large-scale cloud options as a student. Different netcode solutions can be implemented on top of these topologies, these are the methods I will compare against one another.
 
 - **Basic Lockstep**. This solution deals with latency by effectively doing nothing. Each player sends their updated game state to the server and the server waits for all messages to arrive; only then does it process the next tick.
   
@@ -69,3 +69,5 @@ Development will take 2 months with 2 weeks prep time. There's is contingency sp
 [5] H. Teahouse, “GGPO Backroll,” _GitHub_, 03-Oct-2019. [Online]. Available: https://github.com/HouraiTeahouse/Backroll/tree/master/. [Accessed: 03-Feb-2023].
 
 [6] F. Poletti, N. V. Wheeler, M. N. Petrovich, N. Baddela, E. Numkam Fokoua, J. R. Hayes, D. R. Gray, Z. Li, R. Slavík, and D. J. Richardson, “Towards high-capacity fibre-optic communications at the speed of light in vacuum,” _Nature Photonics_, vol. 7, no. 4, pp. 279–284, 2013.
+
+[7] P. Kuittinen, “Very Important Game People in the History of Computer and Video Games,” thesis, 2006. 
