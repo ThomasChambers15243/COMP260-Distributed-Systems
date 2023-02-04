@@ -33,6 +33,7 @@ The standard[4], *old-school* attempt at connecting two players was through a pe
 - **Deterministic Lockstep**. Rather than sending game states, players send only their inputs, the server holds, updates and returns the game state to all players.
 - **Deterministic Lockstep with Input Delay**. Works similar to the above, except the inputs sent, are scheduled for a future tick rather than the current, increasing the server tick rate.
 - **Prediction and Rollback**. The server predicts player inputs and uses the prediction if the real input does not arrive. When the actual input arrives, if the prediction is incorrect, the game is *rolled* back to synchronize the state with other players. In ideal conditions, this approach approaches LAN speeds[5]. This solution is very popular in fighting games[8] where low latency is crucial, more so than in other games. Below demonstrates an implementation called GGPO working between two players.
+
 	<img src="Documentation\Proposal Images\Rollback Diagram.jpg" width="350">[5]
 ## Development 
 Developed in Unity, each player is represented as a member of a player class with full 2D movement capabilities. The collision between players is determined by the distance between their centres and their current blob radius.
