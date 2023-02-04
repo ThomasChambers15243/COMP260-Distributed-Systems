@@ -20,7 +20,7 @@ Latency is the term given when there is any delay in a network. In games, this o
 
 ## Netcode
 
-The standard[4], *old-school* attempt at connecting two players was through a peer-to-peer topology. This worked well for local games, such as Doom, but progressed onto a server-client solution with Quake[7], which provided a much better player experience. While both are still used today, the standard is server-client with an authoritative dedicated game server, this is the topology I will be using, as it can handle lots of different players connecting [3] while being more economically viable than large-scale cloud options as a student. Different netcode solutions can be implemented on top of these topologies, these are the methods I will compare against one another.
+The standard[4], *old-school* attempt at connecting two players was through a peer-to-peer topology. This worked well for local games, such as Doom, but progressed onto a server-client solution with Quake[7], which provided a much better player experience. While both are still used today, the standard is server-client with a dedicated game server, this is the topology I will be using, as it can handle lots of different players connecting [3] while being more economically viable than large-scale cloud options as a student. Different netcode solutions can be implemented on top of these topologies, these are the methods I will compare against one another.
 
 - **Basic Lockstep**. This solution deals with latency by effectively doing nothing. Each player sends their updated game state to the server and the server waits for all messages to arrive; only then does it process the next tick.
   
@@ -32,7 +32,7 @@ The standard[4], *old-school* attempt at connecting two players was through a pe
 
 - **Deterministic Lockstep**. Rather than sending game states, players send only their inputs, the server holds, updates and returns the game state to all players.
 - **Deterministic Lockstep with Input Delay**. Works similar to the above, except the inputs sent, are scheduled for a future tick rather than the current, increasing the server tick rate.
-- **Prediction and Rollback**. The server predicts player inputs and uses the prediction if the real input does not arrive. When the actual input arrives, if the prediction is incorrect, the game is *rolled* back to synchronize the state with other players. In ideal conditions, this approach approaches LAN speeds[5]. Below demonstrates an implementation call GGPO working between two players.
+- **Prediction and Rollback**. The server predicts player inputs and uses the prediction if the real input does not arrive. When the actual input arrives, if the prediction is incorrect, the game is *rolled* back to synchronize the state with other players. In ideal conditions, this approach approaches LAN speeds[5]. This solution is very popular in fighting games[8] where low latency is crucial, more so than in other games. Below demonstrates an implementation called GGPO working between two players.
 	<img src="Documentation\Proposal Images\Rollback Diagram.jpg" width="350">[5]
 ## Development 
 Developed in Unity, each player is represented as a member of a player class with full 2D movement capabilities. The collision between players is determined by the distance between their centres and their current blob radius.
@@ -71,3 +71,5 @@ Development will take 2 months with 2 weeks prep time. There's is contingency sp
 [6] F. Poletti, N. V. Wheeler, M. N. Petrovich, N. Baddela, E. Numkam Fokoua, J. R. Hayes, D. R. Gray, Z. Li, R. Slavík, and D. J. Richardson, “Towards high-capacity fibre-optic communications at the speed of light in vacuum,” _Nature Photonics_, vol. 7, no. 4, pp. 279–284, 2013.
 
 [7] P. Kuittinen, “Very Important Game People in the History of Computer and Video Games,” thesis, 2006. 
+
+[8] A. Ehlert, ‘Improving Input Prediction in Online Fighting Games’, Dissertation, 2021.
