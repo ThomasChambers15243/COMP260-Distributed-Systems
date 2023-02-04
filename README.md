@@ -23,12 +23,17 @@ Latency is the term given when there is any delay in a network. In games, this o
 The standard[4], *old-school* attempt at connecting two players was through a peer-to-peer topology. This progressed onto server-client with an authoritative host. While both are still used today, the standard is server-client with an authoritative dedicated game server, this is the topology I will be using, as it can handle lots of different players connecting [3] while being more economically viable than large-scale cloud options as a student. Different netcode solutions can be implemented on top of these topologies, these are the methods I will compare against one another.
 
 - **Basic Lockstep**. This solution deals with latency by effectively doing nothing. Each player sends their updated game state to the server and the server waits for all messages to arrive; only then does it process the next tick.
-<img src="\Documentation\Proposal Images\Basic Lockstap Diagram.png" alt="" width="200"/>
-- <img src="" alt="" width="200"/>
+  
+	<img src="Documentation\Proposal Images\Basic Lockstap Diagram.png" alt="Diagram showing Best case connection" width="200"/>
+	
+	The largest issue with this method is that if one player connection is suffering from latency, every other player also has to wait, causing significant lag, as seen below.
+
+	<img src="Documentation\Proposal Images\basic lockstep lagging diagram.png" alt="Diagram showing the solution lagging" width="200">
+
 - **Deterministic Lockstep**. Rather than sending game states, players send only their inputs, the server holds, updates and returns the game state to all players.
 - **Deterministic Lockstep with Input Delay**. Works similar to the above, except the inputs sent, are scheduled for a future tick rather than the current, increasing the server tick rate.
-- **Prediction and Rollback**. The server predicts player inputs and uses the prediction if the real input does not arrive. When the actual input arrives, if the prediction is incorrect, the game is *rolled* back to synchronize the state with other players. In ideal conditions, this approach approaches LAN speeds[5].
-
+- **Prediction and Rollback**. The server predicts player inputs and uses the prediction if the real input does not arrive. When the actual input arrives, if the prediction is incorrect, the game is *rolled* back to synchronize the state with other players. In ideal conditions, this approach approaches LAN speeds[5]. Below demostrates an implementation call GGPO working between two players.
+	<img src="Documentation\Proposal Images\Rollback Diagram.jpg" width="350">
 ### Development 
 Developed in Unity, each player is represented as a member of a player class with full 2D movement capabilities. The collision between players is determined by the distance between their centres and their current blob radius.
 ```
