@@ -1,6 +1,8 @@
 # COMP260 Distributed Systems Artefact Proposal
 
 ## Multiplayer Growth-Based Combat Game
+The problem is that latency in games is inherently unsolvable, and only mitigation techniques exist, with their own benefits and draw backs. My artifact will investigate these different networking methods and compare their effectiveness at mitigating latency and its negative affects on the player experience. The results can be used to inform future decisions when writing netcode for multiplayer games.
+
 The standard[4], *old-school* attempt at connecting two players was through a peer-to-peer topology. This worked well for local games, such as Doom, but progressed onto a server-client solution with Quake[7], which provided a much better player experience. While both are still used today, the standard is server-client with a dedicated game server
 
 When there is a delay connecting these two players, we call it **Latency**. In games, this often manifests as a player giving an input and then waiting e.g. 100ms or 200ms, before that input is accepted as part of the game state. This negatively affects the player experience[2] due to interrupting the flow of the game. Latency occurs on a WAN mainly due to:
@@ -10,11 +12,7 @@ When there is a delay connecting these two players, we call it **Latency**. In g
   
 - The player's machine or the game server's tickrate taking longer than expected[10].
 
-*Netcode* is the name given to the client and server code that connects players to a multiplayer game and attempts to handle the problems caused by latency.
-
-The problem is that latency is inherently unsolvable, and only mitigation techniques exist, with their own benefits and draw backs. My artifact will investigate these different networking methods and compare their effectiveness at mitigating latency and its negative affects on the player experience. The results can be used to inform future decisions when writing netcode for multiplayer games.
-
-Using a server-client with a dedicated game server, as it can handle lots of different players connecting [3] while being more economically viable than large-scale cloud options, I will investigate 4 different methods. 
+Using a server-client with a dedicated game server, as it can handle lots of different players connecting [3] while being more economically viable than large-scale cloud options. Written on top of the topology, I will investigate using 4 different methods. 
 
 - **Basic Lockstep**. This solution deals with latency by effectively doing nothing. Each player sends their updated game state to the server and the server waits for all messages to arrive; only then does it process the next tick.
   
