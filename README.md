@@ -56,12 +56,13 @@ if (blob_1.points > blob_2.points+100)
 	blob_1.points += blob_2.points;
 	blob_2.kill();
 }
-
-If GGPO is used for Prediction and Rollback, it will interact with code through its interface, abstracting the algorithmic prediction and rollbaack of frames.
-
-<img src="Documentation\Proposal Images\GGPO Interface Interaction Diagram.jpg" width="600">
-
 ```
+
+If GGPO is used for Prediction and Rollback, it will interact with code through its interface, abstracting the algorithmic prediction and rollbaack of frames. GGPO also uses UDP rather than TCP to reduce latency.
+
+<img src="Documentation\Proposal Images\GGPO Interface Interaction Diagram.jpg" width="450">
+
+
 Development will take 2 months with 2 weeks prep time. There's is contingency space to avoid crunch as fewer networking methods could be implement while still achieving the research goal.
 
 <img src="Documentation\Proposal Images\Dev Roadmap.jpg" width="600">
