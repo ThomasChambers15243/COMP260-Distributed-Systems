@@ -1,24 +1,20 @@
 # COMP260 Distributed Systems Artefact Proposal
- ## Multiplayer Growth-Based Combat Game
-My project will be an online game, drawing inspiration from the game [Agario](https://agar.io/)[1]. My game will be within a 2D map with a top-down perspective. Players will traverse the map as a blob, eating smaller blobs to gain points. The player's radius is directly proportional to their points, so the higher the points, the larger the blob. In the game, a player may consume another player if they are significantly larger in size. Upon consumption, the smaller player is destroyed, and the winning player acquires the points that were previously held by the destroyed player. The game will track each player's highest score, providing a long-term competitive element to the gameplay.
 
-The game state, along with a database holding player data, will be held on a server, where each player will connect from their own, machine.
+## Multiplayer Growth-Based Combat Game
+The standard[4], *old-school* attempt at connecting two players was through a peer-to-peer topology. This worked well for local games, such as Doom, but progressed onto a server-client solution with Quake[7], which provided a much better player experience. While both are still used today, the standard is server-client with a dedicated game server
 
-The game will be developed in Unity. My primary rationale behind this decision is due to Unity's extensive documentation and the supportive community that has been established over the years. Additionally, Unity provides ample resources for networking, allowing me to implement and learn through programming the solution myself, rather than relying solely on pre-built modules, as would be the case in Unreal.
-
-## The Problem
-
-Latency is the term given when there is any delay in a network. In games, this often manifests as a player giving an input and then waiting e.g. 100ms or 200ms, before that input is accepted as part of the game state. This negatively affects the player experience[2] due to interrupting the flow of the game. Latency occurs on a WAN mainly due to:
+When there is a delay connecting these two players, we call it **Latency**. In games, this often manifests as a player giving an input and then waiting e.g. 100ms or 200ms, before that input is accepted as part of the game state. This negatively affects the player experience[2] due to interrupting the flow of the game. Latency occurs on a WAN mainly due to:
 - The broad distances that packet data must travel across the network. Even fibre optic cables are 32% slower than the speed of light in a vacuum[6], causing unavoidable latency.
-- Protocol confirmation, such as TCP needing a response, means that the delay for a message sent is doubled. 
-- The player's machine or the game server's tick rate being slow.
+  
+- Protocol confirmation, such as TCP needing a response, means that the delay is for a round-trip, and the Round-Trip Time (RTTs) is slow in variable[8]. 
+  
+- The player's machine or the game server's tickrate taking longer than expected[10].
 
+*Netcode* is the name given to the client and server code that connects players to a multiplayer game and attempts to handle the problems caused by latency.
 
-*Netcode* is the name given to the client and server code that connects players to a multiplayer game and attempts to handle the problems caused by latency. I will investigate different methods of netcode solutions to compare their effectiveness at handling latency, thus improving the player experience. 
+The problem is that latency is inherently unsolvable, and only mitigation techniques exist, with their own benefits and draw backs. My artifact will investigate these different networking methods and compare their effectiveness at mitigating latency and its negative affects on the player experience. The results can be used to inform future decisions when writing netcode for multiplayer games.
 
-## Netcode
-
-The standard[4], *old-school* attempt at connecting two players was through a peer-to-peer topology. This worked well for local games, such as Doom, but progressed onto a server-client solution with Quake[7], which provided a much better player experience. While both are still used today, the standard is server-client with a dedicated game server, this is the topology I will be using, as it can handle lots of different players connecting [3] while being more economically viable than large-scale cloud options as a student. Different netcode solutions can be implemented on top of these topologies, these are the methods I will compare against one another.
+Using a server-client with a dedicated game server, as it can handle lots of different players connecting [3] while being more economically viable than large-scale cloud options, I will investigate 4 different methods. 
 
 - **Basic Lockstep**. This solution deals with latency by effectively doing nothing. Each player sends their updated game state to the server and the server waits for all messages to arrive; only then does it process the next tick.
   
@@ -33,6 +29,16 @@ The standard[4], *old-school* attempt at connecting two players was through a pe
 - **Prediction and Rollback**. The server predicts player inputs and uses the prediction if the real input does not arrive. When the actual input arrives, if the prediction is incorrect, the game is *rolled* back to synchronize the state with other players. In ideal conditions, this approach approaches LAN speeds[5]. This solution is very popular in fighting games[8] where low latency is crucial, more so than in other games. Below demonstrates an implementation called GGPO working between two players.
 
 	<img src="Documentation\Proposal Images\Rollback Diagram.jpg" width="350">[5]
+
+
+## The Project
+
+The project will be an online game, drawing inspiration from the game [Agario](https://agar.io/)[1]. My game will be within a 2D map with a top-down perspective. Players will traverse the map as a blob, eating smaller blobs to gain points. The player's radius is directly proportional to their points, so the higher the points, the larger the blob. In the game, a player may consume another player if they are significantly larger in size. Upon consumption, the smaller player is destroyed, and the winning player acquires the points that were previously held by the destroyed player. The game will track each player's highest score, providing a long-term competitive element to the gameplay.
+
+The game state, along with a database holding player data, will be held on a server, where each player will connect from their own, machine.
+
+The game will be developed in Unity. My primary rationale behind this decision is due to Unity's extensive documentation and the supportive community that has been established over the years. Additionally, Unity provides ample resources for networking, allowing me to implement and learn through programming the solution myself, rather than relying solely on pre-built modules, as would be the case in Unreal.
+
 ## Development 
 Developed in Unity, each player is represented as a member of a player class with full 2D movement capabilities. The collision between players is determined by the distance between their centres and their current blob radius.
 ```
@@ -50,6 +56,11 @@ if (blob_1.points > blob_2.points+100)
 	blob_1.points += blob_2.points;
 	blob_2.kill();
 }
+
+If GGPO is used for Prediction and Rollback, it will interact with code through its interface, abstracting the algorithmic prediction and rollbaack of frames.
+
+<img src="Documentation\Proposal Images\GGPO Interface Interaction Diagram.jpg" width="600">
+
 ```
 Development will take 2 months with 2 weeks prep time. There's is contingency space to avoid crunch as fewer networking methods could be implement while still achieving the research goal.
 
@@ -73,3 +84,7 @@ Development will take 2 months with 2 weeks prep time. There's is contingency sp
 of Art and Design Helsinki, 2006. 
 
 [8] A. Ehlert, ‘Improving Input Prediction in Online Fighting Games’, Dissertation, KTH, School of Electrical Engineering and Computer Science, 2021.
+
+[9] P. Karn and C. Partridge, “Improving round-trip time estimates in Reliable Transport Protocols,” Proceedings of the ACM workshop on Frontiers in computer communications technology  - SIGCOMM '87, Aug. 1987. 
+
+[10] F. Metzger, A. Rafetseder, and C. Schwartz, “A comprehensive end-to-end lag model for online and Cloud Video gaming,” 5th ISCA/DEGA Workshop on Perceptual Quality of Systems (PQS 2016), Aug. 2016. 
