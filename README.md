@@ -8,8 +8,6 @@ The game will be developed in Unity. My primary rationale behind this decision i
 
 ## The Problem
 
-When players want to connect to each other over a network, there are ultimately two ways; LAN (local area network) and WAN (Wide Area Network). 
-
 Latency is the term given when there is any delay in a network. In games, this often manifests as a player giving an input and then waiting e.g. 100ms or 200ms, before that input is accepted as part of the game state. This negatively affects the player experience[2] due to interrupting the flow of the game. Latency occurs on a WAN mainly due to:
 - The broad distances that packet data must travel across the network. Even fibre optic cables are 32% slower than the speed of light in a vacuum[6], causing unavoidable latency.
 - Protocol confirmation, such as TCP needing a response, means that the delay for a message sent is doubled. 
