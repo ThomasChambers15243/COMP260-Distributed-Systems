@@ -7,7 +7,6 @@ public class Player : MonoBehaviour
 {
     // Data
     public Transform player;
-    private PassiveBlobSpawner spawner;
 
     private float currentPoints = 1;
     private float currentSpeed;
@@ -28,10 +27,6 @@ public class Player : MonoBehaviour
     private void FixedUpdate()
     {
         Move();
-        if (spawner.ShouldSpawnBlob())
-        {
-            spawner.spawnBlob();
-        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -42,7 +37,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    
+
 
     /// <summary>
     /// Calculates the player's size relitive to the player's points
@@ -97,6 +92,7 @@ public class Player : MonoBehaviour
         CalculateSize();
         CalculateSpeed();
         Destroy(entity);
+        
     }
 
     public void Death()

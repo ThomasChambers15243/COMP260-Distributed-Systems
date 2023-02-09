@@ -11,12 +11,17 @@ public class PassiveBlobSpawner : MonoBehaviour
     private int currentNumberOfBlobs;
     private bool cycleSpawn;
 
-    public PassiveBlobSpawner()
+    private void Start()
     {
         spawnRange = 20f;
         maxNumberOfBlobs = 25;
         innitBlobs();
         StartSpawning();
+    }
+
+    private void FixedUpdate()
+    {
+        cycleSpawning();
     }
 
     public int GetCurrentNumberOfBlobs()
@@ -47,6 +52,7 @@ public class PassiveBlobSpawner : MonoBehaviour
     {
         if (ShouldSpawnBlob() && cycleSpawn)
         {
+            Debug.Log("In succussful cycle");
             spawnBlob();
         }
     }
@@ -58,6 +64,11 @@ public class PassiveBlobSpawner : MonoBehaviour
         currentNumberOfBlobs += 1;
     }
 
+    public void killThis()
+    {
+        Destroy(passivePointBlob);
+    }
+
     private void innitBlobs()
     {
         for(int i = 0; i < maxNumberOfBlobs; i++)
@@ -65,4 +76,11 @@ public class PassiveBlobSpawner : MonoBehaviour
             spawnBlob();            
         }
     }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        Debug.Log("collidesd");
+        currentNumberOfBlobs -= 1;
+    }
+
 }
