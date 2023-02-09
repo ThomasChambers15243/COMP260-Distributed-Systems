@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PassiveBlobSpawner : MonoBehaviour
+public class PassiveBlobSpawner
 {
     [SerializeField]
     private GameObject passivePointBlob;
@@ -53,7 +53,7 @@ public class PassiveBlobSpawner : MonoBehaviour
 
     public void spawnBlob()
     {
-        Vector2 spawnPos = new Vector2(UnityEngine.Random.RandomRange(-spawnRange, spawnRange), UnityEngine.Random.RandomRange(-spawnRange, spawnRange));
+        Vector2 spawnPos = new Vector2(UnityEngine.Random.Range(-spawnRange, spawnRange), UnityEngine.Random.Range(-spawnRange, spawnRange));
         Instantiate(passivePointBlob, spawnPos, Quaternion.identity);
         currentNumberOfBlobs += 1;
     }

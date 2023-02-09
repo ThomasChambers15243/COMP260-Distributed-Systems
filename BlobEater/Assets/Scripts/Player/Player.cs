@@ -6,8 +6,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     // Data
-    public Transform player;
-    private PassiveBlobSpawner spawner;
+    public Transform playerTrans;    
 
     private float currentPoints = 1;
     private float currentSpeed;
@@ -19,20 +18,13 @@ public class Player : MonoBehaviour
     private float baseSpeed = 1;
     private float baseSize = 10;
 
-    private void Start()
+    void Start()
     {
         currentSpeed = CalculateSpeed();
         radius = CalculateSize();
-        
     }
-    private void FixedUpdate()
-    {
-        Move();
-        if (spawner.ShouldSpawnBlob())
-        {
-            spawner.spawnBlob();
-        }
-    }
+
+
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -71,7 +63,7 @@ public class Player : MonoBehaviour
     /// <summary>
     /// Full 2D movement of the player
     /// </summary>
-    private void Move()
+    public void Move()
     {
         float inputX = Input.GetAxis("Horizontal");
         float inputY = Input.GetAxis("Vertical");
@@ -80,7 +72,7 @@ public class Player : MonoBehaviour
 
         movement *= Time.deltaTime;
 
-        player.Translate(movement);
+        playerTrans.Translate(movement);
     }
 
 
