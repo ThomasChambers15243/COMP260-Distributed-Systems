@@ -6,9 +6,18 @@ public class PassiveBlobSpawner : MonoBehaviour
 {
     [SerializeField]
     private GameObject passivePointBlob;
-    private float spawnRange = 20f;
-    private int maxNumberOfBlobs = 25;
+    private float spawnRange;
+    private int maxNumberOfBlobs;
     private int currentNumberOfBlobs;
+    private bool cycleSpawn;
+
+    public PassiveBlobSpawner()
+    {
+        spawnRange = 20f;
+        maxNumberOfBlobs = 25;
+        innitBlobs();
+        StartSpawning();
+    }
 
     public int GetCurrentNumberOfBlobs()
     {
@@ -24,14 +33,19 @@ public class PassiveBlobSpawner : MonoBehaviour
         return false;
     }
 
-    private void Start()
+    public void StartSpawning()
     {
-        innitBlobs();
+        cycleSpawn = true;
     }
 
-    private void FixedUpdate()
+    public void EndSpawning()
     {
-        if (ShouldSpawnBlob())
+        cycleSpawn = false;
+    }
+
+    public void cycleSpawning()
+    {
+        if (ShouldSpawnBlob() && cycleSpawn)
         {
             spawnBlob();
         }
@@ -39,7 +53,7 @@ public class PassiveBlobSpawner : MonoBehaviour
 
     public void spawnBlob()
     {
-        Vector2 spawnPos = new Vector2(Random.RandomRange(-spawnRange, spawnRange), Random.RandomRange(-spawnRange, spawnRange));
+        Vector2 spawnPos = new Vector2(UnityEngine.Random.RandomRange(-spawnRange, spawnRange), UnityEngine.Random.RandomRange(-spawnRange, spawnRange));
         Instantiate(passivePointBlob, spawnPos, Quaternion.identity);
         currentNumberOfBlobs += 1;
     }
