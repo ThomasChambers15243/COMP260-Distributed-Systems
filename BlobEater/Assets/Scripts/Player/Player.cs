@@ -92,7 +92,6 @@ public class Player : MonoBehaviour
         CalculateSize();
         CalculateSpeed();
         Destroy(entity);
-        
     }
 
     public void Death()

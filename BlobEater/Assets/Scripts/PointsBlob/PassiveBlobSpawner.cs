@@ -8,13 +8,15 @@ public class PassiveBlobSpawner : MonoBehaviour
     private GameObject passivePointBlob;
     private float spawnRange;
     private int maxNumberOfBlobs;
-    private int currentNumberOfBlobs;
     private bool cycleSpawn;
+    [SerializeField]
+    private List<GameObject> blobs;
 
     private void Start()
     {
         spawnRange = 20f;
         maxNumberOfBlobs = 25;
+        blobs = new List<GameObject>();
         innitBlobs();
         StartSpawning();
     }
@@ -26,12 +28,12 @@ public class PassiveBlobSpawner : MonoBehaviour
 
     public int GetCurrentNumberOfBlobs()
     {
-        return currentNumberOfBlobs;
+        return blobs.Count;
     }
 
     public bool ShouldSpawnBlob()
     {
-        if (currentNumberOfBlobs < maxNumberOfBlobs)
+        if (GetCurrentNumberOfBlobs() < maxNumberOfBlobs)
         {
             return true;
         }
@@ -48,20 +50,35 @@ public class PassiveBlobSpawner : MonoBehaviour
         cycleSpawn = false;
     }
 
+    private void UpdateBlobCount()
+    {
+        int count = 0;
+        while (count < blobs.Count)
+        {
+            if (blobs[count] == null)
+            {
+                Debug.Log(blobs[count]);
+                blobs.RemoveAt(count);
+                count--;
+            }
+            count++;
+        }
+    }
+
     public void cycleSpawning()
     {
+        UpdateBlobCount();
         if (ShouldSpawnBlob() && cycleSpawn)
         {
             Debug.Log("In succussful cycle");
             spawnBlob();
-        }
+        }        
     }
 
     public void spawnBlob()
     {
         Vector2 spawnPos = new Vector2(UnityEngine.Random.RandomRange(-spawnRange, spawnRange), UnityEngine.Random.RandomRange(-spawnRange, spawnRange));
-        Instantiate(passivePointBlob, spawnPos, Quaternion.identity);
-        currentNumberOfBlobs += 1;
+        blobs.Add(Instantiate(passivePointBlob, spawnPos, Quaternion.identity));
     }
 
     public void killThis()
@@ -71,16 +88,9 @@ public class PassiveBlobSpawner : MonoBehaviour
 
     private void innitBlobs()
     {
-        for(int i = 0; i < maxNumberOfBlobs; i++)
+        for (int i = 0; i < maxNumberOfBlobs; i++)
         {
-            spawnBlob();            
+            spawnBlob();
         }
     }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        Debug.Log("collidesd");
-        currentNumberOfBlobs -= 1;
-    }
-
 }
