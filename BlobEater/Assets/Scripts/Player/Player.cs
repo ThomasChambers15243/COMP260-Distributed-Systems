@@ -10,20 +10,24 @@ public class Player : MonoBehaviour
 
     private float currentPoints = 1;
     private float currentSpeed;
+    private float radius = 1;
     private int numberOfKills = 0;
     private float highScore;
-    private float radius;
 
-    private Vector2 position;
     private float baseSpeed = 1;
-    private float baseSize = 10;
 
     private void Start()
     {
         currentSpeed = CalculateSpeed();
-        radius = CalculateSize();
         
     }
+
+    private void UpdateSize()
+    {
+        radius = CalculateSize();
+        player.localScale = new Vector3(radius, radius,1f);
+    }
+
     private void FixedUpdate()
     {
         Move();
@@ -45,12 +49,8 @@ public class Player : MonoBehaviour
     /// <returns></returns>
     private float CalculateSize()
     {
-        float size = currentPoints / baseSize;
-        if (size < baseSize)
-        {
-            return baseSize; 
-        }
-        return size;
+        radius += 10/currentPoints;
+        return radius;
     }
 
     /// <summary>
@@ -82,15 +82,13 @@ public class Player : MonoBehaviour
 
     public void Kill(GameObject entity)
     {
-        Debug.Log("Eaten");
-
         if (entity.tag == "Points Blob")
         {
             currentPoints += 10;
         }
 
-        CalculateSize();
-        CalculateSpeed();
+        UpdateSize();
+        currentSpeed = CalculateSpeed();
         Destroy(entity);
     }
 

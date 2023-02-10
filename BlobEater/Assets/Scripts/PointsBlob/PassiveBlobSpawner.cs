@@ -57,7 +57,6 @@ public class PassiveBlobSpawner : MonoBehaviour
         {
             if (blobs[count] == null)
             {
-                Debug.Log(blobs[count]);
                 blobs.RemoveAt(count);
                 count--;
             }
@@ -70,7 +69,6 @@ public class PassiveBlobSpawner : MonoBehaviour
         UpdateBlobCount();
         if (ShouldSpawnBlob() && cycleSpawn)
         {
-            Debug.Log("In succussful cycle");
             spawnBlob();
         }        
     }
