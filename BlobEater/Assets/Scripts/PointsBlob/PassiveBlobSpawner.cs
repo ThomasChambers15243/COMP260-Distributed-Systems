@@ -2,31 +2,38 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PassiveBlobSpawner
+public class PassiveBlobSpawner : MonoBehaviour
 {
     [SerializeField]
     private GameObject passivePointBlob;
     private float spawnRange;
     private int maxNumberOfBlobs;
-    private int currentNumberOfBlobs;
     private bool cycleSpawn;
+    [SerializeField]
+    private List<GameObject> blobs;
 
-    public PassiveBlobSpawner()
+    private void Start()
     {
         spawnRange = 20f;
         maxNumberOfBlobs = 25;
+        blobs = new List<GameObject>();
         innitBlobs();
         StartSpawning();
     }
 
+    private void FixedUpdate()
+    {
+        cycleSpawning();
+    }
+
     public int GetCurrentNumberOfBlobs()
     {
-        return currentNumberOfBlobs;
+        return blobs.Count;
     }
 
     public bool ShouldSpawnBlob()
     {
-        if (currentNumberOfBlobs < maxNumberOfBlobs)
+        if (GetCurrentNumberOfBlobs() < maxNumberOfBlobs)
         {
             return true;
         }
@@ -43,26 +50,47 @@ public class PassiveBlobSpawner
         cycleSpawn = false;
     }
 
+    private void UpdateBlobCount()
+    {
+        int count = 0;
+        while (count < blobs.Count)
+        {
+            if (blobs[count] == null)
+            {
+                Debug.Log(blobs[count]);
+                blobs.RemoveAt(count);
+                count--;
+            }
+            count++;
+        }
+    }
+
     public void cycleSpawning()
     {
+        UpdateBlobCount();
         if (ShouldSpawnBlob() && cycleSpawn)
         {
+            Debug.Log("In succussful cycle");
             spawnBlob();
-        }
+        }        
     }
 
     public void spawnBlob()
     {
-        Vector2 spawnPos = new Vector2(UnityEngine.Random.Range(-spawnRange, spawnRange), UnityEngine.Random.Range(-spawnRange, spawnRange));
-        Instantiate(passivePointBlob, spawnPos, Quaternion.identity);
-        currentNumberOfBlobs += 1;
+        Vector2 spawnPos = new Vector2(UnityEngine.Random.RandomRange(-spawnRange, spawnRange), UnityEngine.Random.RandomRange(-spawnRange, spawnRange));
+        blobs.Add(Instantiate(passivePointBlob, spawnPos, Quaternion.identity));
+    }
+
+    public void killThis()
+    {
+        Destroy(passivePointBlob);
     }
 
     private void innitBlobs()
     {
-        for(int i = 0; i < maxNumberOfBlobs; i++)
+        for (int i = 0; i < maxNumberOfBlobs; i++)
         {
-            spawnBlob();            
+            spawnBlob();
         }
     }
 }

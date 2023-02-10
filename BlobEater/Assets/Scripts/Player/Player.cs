@@ -6,7 +6,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     // Data
-    public Transform playerTrans;    
+    public Transform player;
 
     private float currentPoints = 1;
     private float currentSpeed;
@@ -18,13 +18,16 @@ public class Player : MonoBehaviour
     private float baseSpeed = 1;
     private float baseSize = 10;
 
-    void Start()
+    private void Start()
     {
         currentSpeed = CalculateSpeed();
         radius = CalculateSize();
+        
     }
-
-
+    private void FixedUpdate()
+    {
+        Move();
+    }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -34,7 +37,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    
+
 
     /// <summary>
     /// Calculates the player's size relitive to the player's points
@@ -63,7 +66,7 @@ public class Player : MonoBehaviour
     /// <summary>
     /// Full 2D movement of the player
     /// </summary>
-    public void Move()
+    private void Move()
     {
         float inputX = Input.GetAxis("Horizontal");
         float inputY = Input.GetAxis("Vertical");
@@ -72,7 +75,7 @@ public class Player : MonoBehaviour
 
         movement *= Time.deltaTime;
 
-        playerTrans.Translate(movement);
+        player.Translate(movement);
     }
 
 
