@@ -6,8 +6,8 @@ public class PassiveBlobSpawner : MonoBehaviour
 {
     [SerializeField]
     private GameObject passivePointBlob;
-    private float spawnRange;
     private int maxNumberOfBlobs;
+    private float spawnRange;
     private bool cycleSpawn;
     [SerializeField]
     private List<GameObject> blobs;
@@ -26,11 +26,19 @@ public class PassiveBlobSpawner : MonoBehaviour
         cycleSpawning();
     }
 
+    /// <summary>
+    /// Gets current amount of blobs
+    /// </summary>
+    /// <returns>Number of current blobs</returns>
     public int GetCurrentNumberOfBlobs()
     {
         return blobs.Count;
     }
 
+    /// <summary>
+    /// Checks to see if theres not enough blobs and whether more should be spawned
+    /// </summary>
+    /// <returns>True if blobs should spawn, else false</returns>
     public bool ShouldSpawnBlob()
     {
         if (GetCurrentNumberOfBlobs() < maxNumberOfBlobs)
@@ -40,16 +48,25 @@ public class PassiveBlobSpawner : MonoBehaviour
         return false;
     }
 
+    /// <summary>
+    /// Starts the spawning cycle of blobs
+    /// </summary>
     public void StartSpawning()
     {
         cycleSpawn = true;
     }
 
+    /// <summary>
+    /// Ends the spawning cycle of blobs
+    /// </summary>
     public void EndSpawning()
     {
         cycleSpawn = false;
     }
 
+    /// <summary>
+    /// Checks and increase if nessesary the amount of blobs
+    /// </summary>
     private void UpdateBlobCount()
     {
         int count = 0;
@@ -64,6 +81,9 @@ public class PassiveBlobSpawner : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Handles the spawning cycle of blobs
+    /// </summary>
     public void cycleSpawning()
     {
         UpdateBlobCount();
@@ -73,17 +93,26 @@ public class PassiveBlobSpawner : MonoBehaviour
         }        
     }
 
+    /// <summary>
+    /// Spawns in one blob
+    /// </summary>
     public void spawnBlob()
     {
         Vector2 spawnPos = new Vector2(UnityEngine.Random.Range(-spawnRange, spawnRange), UnityEngine.Random.Range(-spawnRange, spawnRange));
         blobs.Add(Instantiate(passivePointBlob, spawnPos, Quaternion.identity));
     }
 
+    /// <summary>
+    /// Destroys the blob
+    /// </summary>
     public void killThis()
     {
         Destroy(passivePointBlob);
     }
 
+    /// <summary>
+    /// Sets up the initial game with blobs
+    /// </summary>
     private void innitBlobs()
     {
         for (int i = 0; i < maxNumberOfBlobs; i++)
