@@ -24,8 +24,10 @@ public class Player : MonoBehaviour
     private float currentSpeed;
     private float radius = 1;
     private float baseSpeed = 1;
+    [SerializeField]
     private int currentNumberOfKills = 0;
-    private int blobsEaten;
+    [SerializeField]
+    private int blobsEaten = 0;
 
 
     // Player Database Data
@@ -139,7 +141,12 @@ public class Player : MonoBehaviour
             blobsEaten += 1;
             Destroy(entity);
         }
-
+        if (entity.tag == "Player")
+        {
+            currentPoints += 20;
+            currentNumberOfKills += 1;
+            Destroy(entity);
+        }
         // Update player stats
         UpdateSize();
         UpdateSpeed();
