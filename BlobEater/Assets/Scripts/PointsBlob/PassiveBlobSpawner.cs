@@ -75,7 +75,7 @@ public class PassiveBlobSpawner : MonoBehaviour
 
     public void spawnBlob()
     {
-        Vector2 spawnPos = new Vector2(UnityEngine.Random.RandomRange(-spawnRange, spawnRange), UnityEngine.Random.RandomRange(-spawnRange, spawnRange));
+        Vector2 spawnPos = new Vector2(UnityEngine.Random.Range(-spawnRange, spawnRange), UnityEngine.Random.Range(-spawnRange, spawnRange));
         blobs.Add(Instantiate(passivePointBlob, spawnPos, Quaternion.identity));
     }
 
