@@ -25,12 +25,13 @@ public class Player : MonoBehaviour
     private float radius = 1;
     private float baseSpeed = 1;
     private int currentNumberOfKills = 0;
+    private int blobsEaten;
 
 
     // Player Database Data
     private float highScore;
-    private float totalKills;
-    private float totalBlobsEaten;
+    private int totalKills;
+    private int totalBlobsEaten;
 
     private void Start()
     {
@@ -120,6 +121,7 @@ public class Player : MonoBehaviour
         if (entity.tag == "Points Blob")
         {
             currentPoints += 10;
+            blobsEaten += 1;
         }
 
         UpdateSize();
