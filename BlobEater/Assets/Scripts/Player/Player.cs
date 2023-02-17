@@ -33,6 +33,8 @@ public class Player : MonoBehaviour
     private int totalKills;
     private int totalBlobsEaten;
 
+
+
     private void Start()
     {
         UpdateSpeed();
@@ -40,30 +42,6 @@ public class Player : MonoBehaviour
         // Innits the players camera orthographic settings
         currentOrthoSize = virtualCamera.m_Lens.OrthographicSize;
         targetOrthoSize = currentOrthoSize;
-    }
-
-    /// <summary>
-    /// Increase/decrease the players size relitive to their points
-    /// </summary>
-    private void UpdateSize()
-    {
-        radius = CalculateSize();
-        player.transform.localScale = new Vector3(radius, radius,1f);
-        UpdateCameraZoom();
-
-    }
-
-    /// <summary>
-    /// Zooms in/out the players camera relitive to their points
-    /// </summary>
-    private void UpdateCameraZoom()
-    {
-        // Calculate the target orthographic size based on the player's score
-        float lerpValue = Mathf.Clamp01(currentPoints / scoreThreshold);
-        targetOrthoSize = Mathf.Lerp(minOrthoSize, maxOrthoSize, lerpValue);
-
-        // Interpolate the current orthographic size to the target orthographic size and set it as the current size
-        virtualCamera.m_Lens.OrthographicSize = Mathf.Lerp(currentOrthoSize, targetOrthoSize, zoomSpeed * Time.deltaTime);     
     }
 
     private void FixedUpdate()
@@ -83,7 +61,51 @@ public class Player : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Full 2D movement of the player
+    /// </summary>
+    private void Move()
+    {
+        float inputX = Input.GetAxis("Horizontal");
+        float inputY = Input.GetAxis("Vertical");
 
+        Vector3 movement = new Vector3(currentSpeed * inputX, currentSpeed * inputY, 0);
+
+        movement *= Time.deltaTime;
+
+        player.transform.Translate(movement);
+    }
+
+    /// <summary>
+    /// Sets the current speed to the new speed relitive to the players points
+    /// </summary>
+    private void UpdateSpeed()
+    {
+        currentSpeed = CalculateSpeed();
+    }
+
+    /// <summary>
+    /// Increase/decrease the players size relitive to their points
+    /// </summary>
+    private void UpdateSize()
+    {
+        radius = CalculateSize();
+        player.transform.localScale = new Vector3(radius, radius, 1f);
+        UpdateCameraZoom();
+    }
+
+    /// <summary>
+    /// Zooms in/out the players camera relitive to their points
+    /// </summary>
+    private void UpdateCameraZoom()
+    {
+        // Calculate the target orthographic size based on the player's score
+        float lerpValue = Mathf.Clamp01(currentPoints / scoreThreshold);
+        targetOrthoSize = Mathf.Lerp(minOrthoSize, maxOrthoSize, lerpValue);
+
+        // Interpolate the current orthographic size to the target orthographic size and set it as the current size
+        virtualCamera.m_Lens.OrthographicSize = Mathf.Lerp(currentOrthoSize, targetOrthoSize, zoomSpeed * Time.deltaTime);
+    }
 
     /// <summary>
     /// Calculates the player's size relitive to the player's points
@@ -104,30 +126,6 @@ public class Player : MonoBehaviour
         float baseX = baseSpeed + (currentPoints * 0.01f);
         return 10f * Mathf.Pow(baseSpeed, -1f);
     }
-    
-    /// <summary>
-    /// Sets the current speed to the new speed relitive to the players points
-    /// </summary>
-    private void UpdateSpeed()
-    {
-        currentSpeed = CalculateSpeed();
-    }
-
-    /// <summary>
-    /// Full 2D movement of the player
-    /// </summary>
-    private void Move()
-    {
-        float inputX = Input.GetAxis("Horizontal");
-        float inputY = Input.GetAxis("Vertical");
-
-        Vector3 movement = new Vector3(currentSpeed * inputX, currentSpeed * inputY, 0);
-
-        movement *= Time.deltaTime;
-
-        player.transform.Translate(movement);
-    }
-
 
     /// <summary>
     /// Handles positive collition with blobs and players, killing and gaining points
