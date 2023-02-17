@@ -19,13 +19,18 @@ public class Player : MonoBehaviour
     private float targetOrthoSize;
     private float currentOrthoSize;
 
-    //Player Data
+    // Player Game Data
     private float currentPoints = 1;
     private float currentSpeed;
     private float radius = 1;
-    private int numberOfKills = 0;
-    private float highScore;
     private float baseSpeed = 1;
+    private int currentNumberOfKills = 0;
+
+
+    // Player Database Data
+    private float highScore;
+    private float totalKills;
+    private float totalBlobsEaten;
 
     private void Start()
     {
