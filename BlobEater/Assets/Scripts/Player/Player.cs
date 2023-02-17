@@ -37,10 +37,14 @@ public class Player : MonoBehaviour
     {
         UpdateSpeed();
 
+        // Innits the players camera orthographic settings
         currentOrthoSize = virtualCamera.m_Lens.OrthographicSize;
         targetOrthoSize = currentOrthoSize;
     }
 
+    /// <summary>
+    /// Increase/decrease the players size relitive to their points
+    /// </summary>
     private void UpdateSize()
     {
         radius = CalculateSize();
@@ -49,6 +53,9 @@ public class Player : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Zooms in/out the players camera relitive to their points
+    /// </summary>
     private void UpdateCameraZoom()
     {
         // Calculate the target orthographic size based on the player's score
@@ -64,6 +71,10 @@ public class Player : MonoBehaviour
         Move();
     }
 
+    /// <summary>
+    /// Handles collition with blobs and other players
+    /// </summary>
+    /// <param name="collision">Entity that the player collided with</param>
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.tag == "Points Blob")
@@ -94,6 +105,9 @@ public class Player : MonoBehaviour
         return 10f * Mathf.Pow(baseSpeed, -1f);
     }
     
+    /// <summary>
+    /// Sets the current speed to the new speed relitive to the players points
+    /// </summary>
     private void UpdateSpeed()
     {
         currentSpeed = CalculateSpeed();
@@ -115,20 +129,27 @@ public class Player : MonoBehaviour
     }
 
 
-
+    /// <summary>
+    /// Handles positive collition with blobs and players, killing and gaining points
+    /// </summary>
+    /// <param name="entity">The GameObject the player collided with</param>
     public void Kill(GameObject entity)
     {
         if (entity.tag == "Points Blob")
         {
             currentPoints += 10;
             blobsEaten += 1;
+            Destroy(entity);
         }
 
+        // Update player stats
         UpdateSize();
         UpdateSpeed();
-        Destroy(entity);
     }
 
+    /// <summary>
+    /// Handles player's death
+    /// </summary>
     public void Death()
     {
 
