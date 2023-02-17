@@ -2,30 +2,55 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 public class Player : MonoBehaviour
 {
-    // Data
-    public Transform player;
+    // Player
+    public GameObject player;
+    
+    // Camera
+    [SerializeField]
+    private CinemachineVirtualCamera virtualCamera;
+    private float minOrthoSize = 5f;
+    private float maxOrthoSize = 15f;
+    private float scoreThreshold = 500f;
+    private float zoomSpeed = 1f;
+    private float targetOrthoSize;
+    private float currentOrthoSize;
 
+    //Player Data
     private float currentPoints = 1;
     private float currentSpeed;
     private float radius = 1;
     private int numberOfKills = 0;
     private float highScore;
-
     private float baseSpeed = 1;
 
     private void Start()
     {
-        currentSpeed = CalculateSpeed();
-        
+        UpdateSpeed();
+
+        currentOrthoSize = virtualCamera.m_Lens.OrthographicSize;
+        targetOrthoSize = currentOrthoSize;
     }
 
     private void UpdateSize()
     {
         radius = CalculateSize();
-        player.localScale = new Vector3(radius, radius,1f);
+        player.transform.localScale = new Vector3(radius, radius,1f);
+        UpdateCameraZoom();
+
+    }
+
+    private void UpdateCameraZoom()
+    {
+        // Calculate the target orthographic size based on the player's score
+        float lerpValue = Mathf.Clamp01(currentPoints / scoreThreshold);
+        targetOrthoSize = Mathf.Lerp(minOrthoSize, maxOrthoSize, lerpValue);
+
+        // Interpolate the current orthographic size to the target orthographic size and set it as the current size
+        virtualCamera.m_Lens.OrthographicSize = Mathf.Lerp(currentOrthoSize, targetOrthoSize, zoomSpeed * Time.deltaTime);     
     }
 
     private void FixedUpdate()
@@ -63,6 +88,11 @@ public class Player : MonoBehaviour
         return 10f * Mathf.Pow(baseSpeed, -1f);
     }
     
+    private void UpdateSpeed()
+    {
+        currentSpeed = CalculateSpeed();
+    }
+
     /// <summary>
     /// Full 2D movement of the player
     /// </summary>
@@ -75,7 +105,7 @@ public class Player : MonoBehaviour
 
         movement *= Time.deltaTime;
 
-        player.Translate(movement);
+        player.transform.Translate(movement);
     }
 
 
@@ -88,7 +118,7 @@ public class Player : MonoBehaviour
         }
 
         UpdateSize();
-        currentSpeed = CalculateSpeed();
+        UpdateSpeed();
         Destroy(entity);
     }
 
