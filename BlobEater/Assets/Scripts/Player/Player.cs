@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
@@ -24,11 +25,12 @@ public class Player : MonoBehaviour
     private float currentSpeed;
     private float radius = 1;
     private float baseSpeed = 1;
-    [SerializeField]
+    
+    // Player Ui
     private int currentNumberOfKills = 0;
-    [SerializeField]
+    public Text textKilss;
     private int blobsEaten = 0;
-
+    public Text textEaten;
 
     // Player Database Data
     private float highScore;
