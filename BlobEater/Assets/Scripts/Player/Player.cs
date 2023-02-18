@@ -28,7 +28,7 @@ public class Player : MonoBehaviour
     
     // Player Ui
     private int currentNumberOfKills = 0;
-    public Text textKilss;
+    public Text textKills;
     private int blobsEaten = 0;
     public Text textEaten;
 
@@ -59,10 +59,8 @@ public class Player : MonoBehaviour
     /// <param name="collision">Entity that the player collided with</param>
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.tag == "Points Blob")
-        {
-            Kill(collision.gameObject);
-        }
+        Kill(collision.gameObject);
+        UpdateUI();
     }
 
     /// <summary>
@@ -111,6 +109,12 @@ public class Player : MonoBehaviour
         virtualCamera.m_Lens.OrthographicSize = Mathf.Lerp(currentOrthoSize, targetOrthoSize, zoomSpeed * Time.deltaTime);
     }
 
+    private void UpdateUI()
+    {
+        textKills.text = string.Concat("KILLS: ", currentNumberOfKills);
+        textEaten.text = string.Concat("Blobs Eaten: ", blobsEaten);
+    }
+
     /// <summary>
     /// Calculates the player's size relitive to the player's points
     /// </summary>
@@ -140,7 +144,7 @@ public class Player : MonoBehaviour
         if (entity.tag == "Points Blob")
         {
             currentPoints += 10;
-            blobsEaten += 1;
+            blobsEaten += 1;            
             Destroy(entity);
         }
         if (entity.tag == "Player")
