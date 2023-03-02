@@ -5,6 +5,7 @@ using UnityEngine;
 using Cinemachine;
 using UnityEngine.UI;
 using Unity.Netcode;
+using UnityEngine.Windows;
 
 public class Player : NetworkBehaviour
 {
@@ -45,12 +46,20 @@ public class Player : NetworkBehaviour
         UpdateSpeed();
 
         // Innits the players camera orthographic settings
+        virtualCamera.gameObject.SetActive(false);  
         currentOrthoSize = virtualCamera.m_Lens.OrthographicSize;
         targetOrthoSize = currentOrthoSize;
-    }
+    }        
+
+    
 
     private void FixedUpdate()
     {
+        if (!IsOwner) return;
+        if(IsOwner)
+        {
+            virtualCamera.gameObject.SetActive(true);
+        }
         Move();
     }
 
@@ -69,14 +78,31 @@ public class Player : NetworkBehaviour
     /// </summary>
     private void Move()
     {
-        float inputX = Input.GetAxis("Horizontal");
-        float inputY = Input.GetAxis("Vertical");
+        float inputX = UnityEngine.Input.GetAxis("Horizontal");
+        float inputY = UnityEngine.Input.GetAxis("Vertical");
 
-        Vector3 movement = new Vector3(currentSpeed * inputX, currentSpeed * inputY, 0);
+        if (inputX != 0.0 || inputY != 0.0)
+        {
+            Vector3 movement = new Vector3(currentSpeed * inputX, currentSpeed * inputY, 0);
 
-        movement *= Time.deltaTime;
+            movement *= Time.deltaTime;
+            SendMovementServerRPC(movement);
+        }
+        //player.transform.Translate(movement);
+    }
 
-        player.transform.Translate(movement);
+    // Deterministic Lockstep
+    // Works with lag, as is the nature of this tupe of movement
+    [ServerRpc(RequireOwnership = false)]
+    public void SendMovementServerRPC(Vector3 movement, ServerRpcParams serverRpcParams = default)
+    {
+        var clientId = serverRpcParams.Receive.SenderClientId;
+        Debug.Log(clientId);
+        if (NetworkManager.ConnectedClients.ContainsKey(clientId))
+        {
+            var client = NetworkManager.ConnectedClients[clientId];
+            client.PlayerObject.transform.Translate(movement);
+        }
     }
 
     /// <summary>
