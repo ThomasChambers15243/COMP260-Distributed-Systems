@@ -69,8 +69,8 @@ public class Player : NetworkBehaviour
     /// <param name="collision">Entity that the player collided with</param>
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Kill(collision.gameObject);
-        UpdateUI();
+        Kill(collision);
+        UpdateUI();        
     }
 
     /// <summary>
@@ -168,19 +168,23 @@ public class Player : NetworkBehaviour
     /// Handles positive collition with blobs and players, killing and gaining points
     /// </summary>
     /// <param name="entity">The GameObject the player collided with</param>
-    public void Kill(GameObject entity)
+    public void Kill(Collision2D entity)
     {
-        if (entity.tag == "Points Blob")
+        if (entity.gameObject.tag == "Points Blob")
         {
             currentPoints += 10;
             blobsEaten += 1;            
-            Destroy(entity);
+            Destroy(entity.gameObject);
         }
-        if (entity.tag == "Player")
+        if (entity.gameObject.tag == "Player")
         {
-            currentPoints += 20;
-            currentNumberOfKills += 1;
-            Destroy(entity);
+            if(currentPoints > entity.gameObject.GetComponent<Player>().currentPoints)
+            {
+                currentPoints += 20;
+                currentNumberOfKills += 1;
+                entity.gameObject.GetComponent<NetworkObject>().Spawn(false);
+                Destroy(entity.gameObject);            
+            }
         }
         // Update player stats
         UpdateSize();
