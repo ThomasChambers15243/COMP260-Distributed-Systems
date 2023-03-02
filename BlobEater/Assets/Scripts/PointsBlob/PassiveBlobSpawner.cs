@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 public class PassiveBlobSpawner : MonoBehaviour
@@ -12,7 +13,7 @@ public class PassiveBlobSpawner : MonoBehaviour
     [SerializeField]
     private List<GameObject> blobs;
 
-    private void Start()
+    public void InnitSpawner()
     {
         spawnRange = 20f;
         maxNumberOfBlobs = 25;
@@ -99,7 +100,12 @@ public class PassiveBlobSpawner : MonoBehaviour
     public void spawnBlob()
     {
         Vector2 spawnPos = new Vector2(UnityEngine.Random.Range(-spawnRange, spawnRange), UnityEngine.Random.Range(-spawnRange, spawnRange));
-        blobs.Add(Instantiate(passivePointBlob, spawnPos, Quaternion.identity));
+        // Not networked way of spawning
+        // blobs.Add(Instantiate(passivePointBlob, spawnPos, Quaternion.identity));
+        // Networked Spawning
+        GameObject spawnedBlob = Instantiate(passivePointBlob, spawnPos, Quaternion.identity);
+        blobs.Add(spawnedBlob);
+        spawnedBlob.GetComponent<NetworkObject>().Spawn(true);
     }
 
     /// <summary>

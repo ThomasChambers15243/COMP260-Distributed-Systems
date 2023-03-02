@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
 using UnityEngine.UI;
+using Unity.Netcode;
 
-public class Player : MonoBehaviour
+public class Player : NetworkBehaviour
 {
     // Player
     public GameObject player;
@@ -109,10 +110,12 @@ public class Player : MonoBehaviour
         virtualCamera.m_Lens.OrthographicSize = Mathf.Lerp(currentOrthoSize, targetOrthoSize, zoomSpeed * Time.deltaTime);
     }
 
+    // TODO edit once ui is working for each player
     private void UpdateUI()
     {
-        textKills.text = string.Concat("KILLS: ", currentNumberOfKills);
-        textEaten.text = string.Concat("Blobs Eaten: ", blobsEaten);
+        return;
+        //textKills.text = string.Concat("KILLS: ", currentNumberOfKills);
+        //textEaten.text = string.Concat("Blobs Eaten: ", blobsEaten);
     }
 
     /// <summary>

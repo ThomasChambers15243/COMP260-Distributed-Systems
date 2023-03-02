@@ -9,6 +9,8 @@ public class NetworkManagerUI : MonoBehaviour
     [SerializeField] private Button serverBtn;
     [SerializeField] private Button hostBtn;
     [SerializeField] private Button clientBtn;
+    [SerializeField] private GameObject MainGame;
+
     private void Awake()
     {
         serverBtn.onClick.AddListener(() => {
@@ -17,6 +19,7 @@ public class NetworkManagerUI : MonoBehaviour
         hostBtn.onClick.AddListener(() =>
         {
             NetworkManager.Singleton.StartHost();
+            MainGame.GetComponent<PassiveBlobSpawner>().InnitSpawner();
         });
         clientBtn.onClick.AddListener(() =>
         {
