@@ -23,6 +23,7 @@ public class Player : NetworkBehaviour
     private float currentOrthoSize;
 
     // Player Game Data
+    [SerializeField]
     private float currentPoints = 1;
     private float currentSpeed;
     private float radius = 1;
@@ -63,6 +64,8 @@ public class Player : NetworkBehaviour
         Move();
     }
 
+    
+
     /// <summary>
     /// Handles collition with blobs and other players
     /// </summary>
@@ -88,22 +91,8 @@ public class Player : NetworkBehaviour
             movement *= Time.deltaTime;
             SendMovementServerRPC(movement);
         }
-        //player.transform.Translate(movement);
     }
 
-    // Deterministic Lockstep
-    // Works with lag, as is the nature of this tupe of movement
-    [ServerRpc(RequireOwnership = false)]
-    public void SendMovementServerRPC(Vector3 movement, ServerRpcParams serverRpcParams = default)
-    {
-        var clientId = serverRpcParams.Receive.SenderClientId;
-        Debug.Log(clientId);
-        if (NetworkManager.ConnectedClients.ContainsKey(clientId))
-        {
-            var client = NetworkManager.ConnectedClients[clientId];
-            client.PlayerObject.transform.Translate(movement);
-        }
-    }
 
     /// <summary>
     /// Sets the current speed to the new speed relitive to the players points
@@ -172,23 +161,45 @@ public class Player : NetworkBehaviour
     {
         if (entity.gameObject.tag == "Points Blob")
         {
-            currentPoints += 10;
-            blobsEaten += 1;            
+            PointsUpdateServerRPC(10);
+            //blobsEaten += 1;
+            
+            Debug.Log("CurrentPoints is:" + currentPoints + " and client id is: " + OwnerClientId);
             Destroy(entity.gameObject);
         }
-        if (entity.gameObject.tag == "Player")
-        {
+        else 
+        { 
+            Debug.Log("CurrentPoints is:" + currentPoints + " and other points is : " + entity.gameObject.GetComponent<Player>().currentPoints);
             if(currentPoints > entity.gameObject.GetComponent<Player>().currentPoints)
             {
-                currentPoints += 20;
-                currentNumberOfKills += 1;
-                entity.gameObject.GetComponent<NetworkObject>().Spawn(false);
+                //currentNumberOfKills += 1;
+                PointsUpdateServerRPC(20);
+                Debug.Log(currentPoints + "  " + entity.gameObject.GetComponent<Player>().currentPoints);                
                 Destroy(entity.gameObject);            
             }
         }
         // Update player stats
         UpdateSize();
         UpdateSpeed();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void PointsUpdateServerRPC(int points, ServerRpcParams serverRpcParams = default)
+    {        
+        var client = NetworkManager.ConnectedClients[OwnerClientId];
+        Debug.Log("ClientID is " + OwnerClientId);
+        client.PlayerObject.gameObject.GetComponent<Player>().currentPoints += points;
+    }
+    
+    // Works with lag, as is the nature of this tupe of movement
+    [ServerRpc(RequireOwnership = false)]
+    public void SendMovementServerRPC(Vector3 movement, ServerRpcParams serverRpcParams = default)
+    {
+        if (NetworkManager.ConnectedClients.ContainsKey(OwnerClientId))
+        {
+            var client = NetworkManager.ConnectedClients[OwnerClientId];
+            client.PlayerObject.transform.Translate(movement);
+        }
     }
 
     /// <summary>
