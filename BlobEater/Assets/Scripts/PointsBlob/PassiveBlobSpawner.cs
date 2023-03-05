@@ -11,7 +11,7 @@ public class PassiveBlobSpawner : MonoBehaviour
     private float spawnRange;
     private bool cycleSpawn;
     [SerializeField]
-    private List<GameObject> blobs;
+    public List<GameObject> blobs;
 
     public void InnitSpawner()
     {

@@ -91,7 +91,8 @@ public class Player : NetworkBehaviour
             Vector3 movement = new Vector3(currentSpeed * inputX, currentSpeed * inputY, 0);
 
             movement *= Time.deltaTime;
-            SendMovementServerRPC(movement);
+            transform.Translate(movement);
+            //SendMovementServerRPC(movement);
         }
     }
 
@@ -163,11 +164,15 @@ public class Player : NetworkBehaviour
     {
         if (entity.gameObject.tag == "Points Blob")
         {
-            PointsUpdateServerRPC(10);
+            //PointsUpdateServerRPC(10);
+            currentPoints += 10;
             //blobsEaten += 1;
             
             Debug.Log("CurrentPoints is:" + currentPoints + " and client id is: " + OwnerClientId);
-            Destroy(entity.gameObject);
+            DespawnBlobsServerRPC(entity.gameObject.GetComponent<NetworkObject>().NetworkObjectId);
+            // Update player stats
+            UpdateSize();
+            UpdateSpeed();
         }
         else 
         { 
@@ -178,16 +183,23 @@ public class Player : NetworkBehaviour
                 PointsUpdateServerRPC(20);
                 Debug.Log(currentPoints + "  " + entity.gameObject.GetComponent<Player>().currentPoints);
                 entity.gameObject.GetComponent<Player>().Death();               
+                // Update player stats
+                UpdateSize();
+                UpdateSpeed();
             }
         }
-        // Update player stats
-        UpdateSize();
-        UpdateSpeed();
+    }
+
+
+    [ServerRpc]
+    public void DespawnBlobsServerRPC(ulong id)
+    {
+        GetNetworkObject(id).Despawn(true);
     }
 
     [ServerRpc(RequireOwnership = false)]
     public void PointsUpdateServerRPC(int points, ServerRpcParams serverRpcParams = default)
-    {        
+    {
         var client = NetworkManager.ConnectedClients[OwnerClientId];
         Debug.Log("ClientID is " + OwnerClientId);
         client.PlayerObject.gameObject.GetComponent<Player>().currentPoints += points;
@@ -204,13 +216,32 @@ public class Player : NetworkBehaviour
         }
     }
 
+    [ServerRpc(RequireOwnership = false)]
+    public void DespawnenPlayerServerRPC()
+    {
+        if (NetworkManager.ConnectedClients.ContainsKey(OwnerClientId))
+        {
+            var client = NetworkManager.ConnectedClients[OwnerClientId];
+            Destroy(client.PlayerObject.gameObject);
+        }
+    }
+
+    [ClientRpc]
+    public void DespawnPlayerClientRPC(ulong id)
+    {
+        if(OwnerClientId == id)
+        {
+            var client = NetworkManager.ConnectedClients[OwnerClientId];
+            Destroy(client.PlayerObject);
+        }
+    }
 
     /// <summary>
     /// Handles player's death
     /// </summary>
     public void Death()
     {
-        Destroy(gameObject);
+        DespawnenPlayerServerRPC();
     }
 
 
