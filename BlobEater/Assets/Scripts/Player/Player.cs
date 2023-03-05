@@ -172,7 +172,7 @@ public class Player : NetworkBehaviour
         else 
         { 
             Debug.Log("CurrentPoints is:" + currentPoints + " and other points is : " + entity.gameObject.GetComponent<Player>().currentPoints);
-            if(currentPoints > entity.gameObject.GetComponent<Player>().currentPoints)
+            if(currentPoints > (2*entity.gameObject.GetComponent<Player>().currentPoints))
             {
                 //currentNumberOfKills += 1;
                 PointsUpdateServerRPC(20);
