@@ -6,12 +6,13 @@ using Cinemachine;
 using UnityEngine.UI;
 using Unity.Netcode;
 using UnityEngine.Windows;
+using static Unity.Collections.AllocatorManager;
 
 public class Player : NetworkBehaviour
 {
     // Player
     public GameObject player;
-    
+
     // Camera
     [SerializeField]
     private CinemachineVirtualCamera virtualCamera;
@@ -28,6 +29,7 @@ public class Player : NetworkBehaviour
     private float currentSpeed;
     private float radius = 1;
     private float baseSpeed = 1;
+    private float spawnRange = 20f;
     
     // Player Ui
     private int currentNumberOfKills = 0;
@@ -174,8 +176,8 @@ public class Player : NetworkBehaviour
             {
                 //currentNumberOfKills += 1;
                 PointsUpdateServerRPC(20);
-                Debug.Log(currentPoints + "  " + entity.gameObject.GetComponent<Player>().currentPoints);                
-                Destroy(entity.gameObject);            
+                Debug.Log(currentPoints + "  " + entity.gameObject.GetComponent<Player>().currentPoints);
+                entity.gameObject.GetComponent<Player>().Death();               
             }
         }
         // Update player stats
@@ -190,7 +192,7 @@ public class Player : NetworkBehaviour
         Debug.Log("ClientID is " + OwnerClientId);
         client.PlayerObject.gameObject.GetComponent<Player>().currentPoints += points;
     }
-    
+
     // Works with lag, as is the nature of this tupe of movement
     [ServerRpc(RequireOwnership = false)]
     public void SendMovementServerRPC(Vector3 movement, ServerRpcParams serverRpcParams = default)
@@ -202,12 +204,13 @@ public class Player : NetworkBehaviour
         }
     }
 
+
     /// <summary>
     /// Handles player's death
     /// </summary>
     public void Death()
     {
-
+        Destroy(gameObject);
     }
 
 
