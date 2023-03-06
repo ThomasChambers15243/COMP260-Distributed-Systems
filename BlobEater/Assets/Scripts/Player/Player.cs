@@ -25,7 +25,8 @@ public class Player : NetworkBehaviour
 
     // Player Game Data
     [SerializeField]
-    private float currentPoints = 1;
+    //private float currentPoints = 1;
+    private NetworkVariable<float> currentPoints = new NetworkVariable<float>(1,NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     private float currentSpeed;
     private float radius = 1;
     private float baseSpeed = 1;
@@ -52,9 +53,9 @@ public class Player : NetworkBehaviour
         virtualCamera.gameObject.SetActive(false);  
         currentOrthoSize = virtualCamera.m_Lens.OrthographicSize;
         targetOrthoSize = currentOrthoSize;
-    }        
+    }
 
-    
+
 
     private void FixedUpdate()
     {
@@ -121,7 +122,7 @@ public class Player : NetworkBehaviour
     private void UpdateCameraZoom()
     {
         // Calculate the target orthographic size based on the player's score
-        float lerpValue = Mathf.Clamp01(currentPoints / scoreThreshold);
+        float lerpValue = Mathf.Clamp01(currentPoints.Value / scoreThreshold);
         targetOrthoSize = Mathf.Lerp(minOrthoSize, maxOrthoSize, lerpValue);
 
         // Interpolate the current orthographic size to the target orthographic size and set it as the current size
@@ -142,8 +143,8 @@ public class Player : NetworkBehaviour
     /// <returns></returns>
     private float CalculateSize()
     {
-        radius += 10/currentPoints;
-        return radius;
+        float newRadius = radius + (10/currentPoints.Value);
+        return newRadius;
     }
 
     /// <summary>
@@ -152,7 +153,7 @@ public class Player : NetworkBehaviour
     /// <returns>Float value speed</returns>
     private float CalculateSpeed()
     {
-        float baseX = baseSpeed + (currentPoints * 0.01f);
+        float baseX = baseSpeed + (currentPoints.Value * 0.01f);
         return 10f * Mathf.Pow(baseSpeed, -1f);
     }
 
@@ -165,7 +166,7 @@ public class Player : NetworkBehaviour
         if (entity.gameObject.tag == "Points Blob")
         {
             //PointsUpdateServerRPC(10);
-            currentPoints += 10;
+            currentPoints.Value += 10;
             //blobsEaten += 1;
             
             Debug.Log("CurrentPoints is:" + currentPoints + " and client id is: " + OwnerClientId);
@@ -177,7 +178,7 @@ public class Player : NetworkBehaviour
         else 
         { 
             Debug.Log("CurrentPoints is:" + currentPoints + " and other points is : " + entity.gameObject.GetComponent<Player>().currentPoints);
-            if(currentPoints > (2*entity.gameObject.GetComponent<Player>().currentPoints))
+            if(currentPoints.Value > (2*entity.gameObject.GetComponent<Player>().currentPoints.Value))
             {
                 //currentNumberOfKills += 1;
                 PointsUpdateServerRPC(20);
@@ -202,7 +203,7 @@ public class Player : NetworkBehaviour
     {
         var client = NetworkManager.ConnectedClients[OwnerClientId];
         Debug.Log("ClientID is " + OwnerClientId);
-        client.PlayerObject.gameObject.GetComponent<Player>().currentPoints += points;
+        client.PlayerObject.gameObject.GetComponent<Player>().currentPoints.Value += points;
     }
 
     // Works with lag, as is the nature of this tupe of movement
