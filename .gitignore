@@ -61,6 +61,12 @@ crashlytics-build.properties
 # Mac OS
 .DS_Store
 
+Learning Networking
+Learning Networking_clone_0
+BlobEater_clone_0
+
+
+
 #Arduino
 bin/*/
 *build-*
@@ -77,3 +83,4 @@ MidiProject/Temp/UnityLockfile
 MidiProject/Temp
 MidiProject/Logs
 MidiProject/Library
+
