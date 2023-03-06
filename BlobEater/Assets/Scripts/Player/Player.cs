@@ -25,17 +25,14 @@ public class Player : NetworkBehaviour
 
     // Player Game Data
     [SerializeField]
-    private float currentPoints = 1;
+    private float currentPoints = 10;
     private float currentSpeed;
     private float radius = 1;
     private float baseSpeed = 1;
-    private float spawnRange = 20f;
     
     // Player Ui
     private int currentNumberOfKills = 0;
-    public Text textKills;
     private int blobsEaten = 0;
-    public Text textEaten;
 
     // Player Database Data
     private float highScore;
@@ -127,12 +124,15 @@ public class Player : NetworkBehaviour
         virtualCamera.m_Lens.OrthographicSize = Mathf.Lerp(currentOrthoSize, targetOrthoSize, zoomSpeed * Time.deltaTime);
     }
 
-    // TODO edit once ui is working for each player
+    // Sets Text for each player
     private void UpdateUI()
     {
-        return;
-        //textKills.text = string.Concat("KILLS: ", currentNumberOfKills);
-        //textEaten.text = string.Concat("Blobs Eaten: ", blobsEaten);
+        GameObject canvas = GameObject.Find("Canvas");
+        GameObject textKills = canvas.transform.GetChild(0).gameObject;
+        GameObject textEaten = canvas.transform.GetChild(1).gameObject;
+
+        textKills.GetComponent<Text>().text = string.Concat("Kills: ", currentNumberOfKills);
+        textEaten.GetComponent<Text>().text = string.Concat("Blobs Eaten: ", blobsEaten);
     }
 
     /// <summary>
@@ -164,25 +164,28 @@ public class Player : NetworkBehaviour
         if (entity.gameObject.tag == "Points Blob")
         {
             PointsUpdateServerRPC(10);
-            //blobsEaten += 1;
+            blobsEaten += 1;
             
             Debug.Log("CurrentPoints is:" + currentPoints + " and client id is: " + OwnerClientId);
             Destroy(entity.gameObject);
+            // Update player stats
+            UpdateSize();
+            UpdateSpeed();
         }
         else 
         { 
             Debug.Log("CurrentPoints is:" + currentPoints + " and other points is : " + entity.gameObject.GetComponent<Player>().currentPoints);
             if(currentPoints > (2*entity.gameObject.GetComponent<Player>().currentPoints))
             {
-                //currentNumberOfKills += 1;
-                PointsUpdateServerRPC(20);
+                PointsUpdateServerRPC((int)entity.gameObject.GetComponent<Player>().currentPoints);
                 Debug.Log(currentPoints + "  " + entity.gameObject.GetComponent<Player>().currentPoints);
+                currentNumberOfKills += 1;
                 entity.gameObject.GetComponent<Player>().Death();               
+                // Update player stats
+                UpdateSize();
+                UpdateSpeed();
             }
         }
-        // Update player stats
-        UpdateSize();
-        UpdateSpeed();
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -204,13 +207,22 @@ public class Player : NetworkBehaviour
         }
     }
 
+    [ServerRpc(RequireOwnership = false)]
+    public void DespawnenPlayerServerRPC()
+    {
+        if (NetworkManager.ConnectedClients.ContainsKey(OwnerClientId))
+        {
+            var client = NetworkManager.ConnectedClients[OwnerClientId];
+            Destroy(client.PlayerObject.gameObject);
+        }
+    }
 
     /// <summary>
     /// Handles player's death
     /// </summary>
     public void Death()
     {
-        Destroy(gameObject);
+        DespawnenPlayerServerRPC();
     }
 
 
