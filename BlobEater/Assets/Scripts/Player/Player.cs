@@ -141,8 +141,8 @@ public class Player : NetworkBehaviour
     /// <returns></returns>
     private float CalculateSize()
     {
-        radius += 10/currentPoints;
-        return radius;
+        float newRadius = radius + 10/currentPoints;
+        return newRadius;
     }
 
     /// <summary>
@@ -165,9 +165,8 @@ public class Player : NetworkBehaviour
         {
             PointsUpdateServerRPC(10);
             blobsEaten += 1;
-            
-            Debug.Log("CurrentPoints is:" + currentPoints + " and client id is: " + OwnerClientId);
-            Destroy(entity.gameObject);
+            DespawnBlobsServerRPC(entity.gameObject.GetComponent<NetworkObject>().NetworkObjectId);
+            //Destroy(entity.gameObject);
             // Update player stats
             UpdateSize();
             UpdateSpeed();
@@ -178,14 +177,20 @@ public class Player : NetworkBehaviour
             if(currentPoints > (2*entity.gameObject.GetComponent<Player>().currentPoints))
             {
                 PointsUpdateServerRPC((int)entity.gameObject.GetComponent<Player>().currentPoints);
-                Debug.Log(currentPoints + "  " + entity.gameObject.GetComponent<Player>().currentPoints);
                 currentNumberOfKills += 1;
-                entity.gameObject.GetComponent<Player>().Death();               
+                entity.gameObject.GetComponent<Player>().Death();          
+                
                 // Update player stats
                 UpdateSize();
                 UpdateSpeed();
             }
         }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void DespawnBlobsServerRPC(ulong id)
+    {
+        GetNetworkObject(id).Despawn(true);
     }
 
     [ServerRpc(RequireOwnership = false)]
