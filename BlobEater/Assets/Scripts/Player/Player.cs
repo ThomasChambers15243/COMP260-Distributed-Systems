@@ -132,9 +132,12 @@ public class Player : NetworkBehaviour
     // TODO edit once ui is working for each player
     private void UpdateUI()
     {
-        return;
-        //textKills.text = string.Concat("KILLS: ", currentNumberOfKills);
-        //textEaten.text = string.Concat("Blobs Eaten: ", blobsEaten);
+        GameObject canvas = GameObject.Find("Canvas");
+        GameObject textKills = canvas.transform.GetChild(0).gameObject;
+        GameObject textEaten = canvas.transform.GetChild(1).gameObject;
+
+        textKills.GetComponent<Text>().text = string.Concat("Kills: ", currentNumberOfKills);
+        textEaten.GetComponent<Text>().text = string.Concat("Blbos Eaten: ", blobsEaten);
     }
 
     /// <summary>
