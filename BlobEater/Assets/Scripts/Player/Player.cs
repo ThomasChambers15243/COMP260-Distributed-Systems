@@ -48,14 +48,17 @@ public class Player : NetworkBehaviour
     private void Start()
     {
         UpdateSpeed();
-
         // Innits the players camera orthographic settings
         virtualCamera.gameObject.SetActive(false);  
         currentOrthoSize = virtualCamera.m_Lens.OrthographicSize;
         targetOrthoSize = currentOrthoSize;
     }
 
-
+    public override void OnNetworkSpawn()
+    {
+        currentPoints.Value = 10f;
+        base.OnNetworkSpawn();
+    }
 
     private void FixedUpdate()
     {
@@ -64,7 +67,7 @@ public class Player : NetworkBehaviour
         {
             virtualCamera.gameObject.SetActive(true);
         }
-        Move();
+        Move();        
     }
 
     
@@ -164,13 +167,13 @@ public class Player : NetworkBehaviour
     public void Kill(Collision2D entity)
     {
         if (entity.gameObject.tag == "Points Blob")
-        {
-            //PointsUpdateServerRPC(10);
+        {            
             currentPoints.Value += 10;
             //blobsEaten += 1;
             
-            Debug.Log("CurrentPoints is:" + currentPoints + " and client id is: " + OwnerClientId);
+            Debug.Log("CurrentPoints is:" + currentPoints.Value + " and client id is: " + OwnerClientId);
             DespawnBlobsServerRPC(entity.gameObject.GetComponent<NetworkObject>().NetworkObjectId);
+            
             // Update player stats
             UpdateSize();
             UpdateSpeed();
@@ -181,8 +184,9 @@ public class Player : NetworkBehaviour
             if(currentPoints.Value > (2*entity.gameObject.GetComponent<Player>().currentPoints.Value))
             {
                 //currentNumberOfKills += 1;
-                PointsUpdateServerRPC(20);
-                Debug.Log(currentPoints + "  " + entity.gameObject.GetComponent<Player>().currentPoints);
+                //PointsUpdateServerRPC(20);
+                currentPoints.Value += entity.gameObject.GetComponent<Player>().currentPoints.Value;
+                Debug.Log(currentPoints.Value + " OTTHERS " + entity.gameObject.GetComponent<Player>().currentPoints.Value);
                 entity.gameObject.GetComponent<Player>().Death();               
                 // Update player stats
                 UpdateSize();
