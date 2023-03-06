@@ -25,12 +25,10 @@ public class Player : NetworkBehaviour
 
     // Player Game Data
     [SerializeField]
-    //private float currentPoints = 1;
     private NetworkVariable<float> currentPoints = new NetworkVariable<float>(1,NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     private float currentSpeed;
     private float radius = 1;
     private float baseSpeed = 1;
-    private float spawnRange = 20f;
     
     // Player Ui
     private int currentNumberOfKills = 0;
@@ -96,7 +94,6 @@ public class Player : NetworkBehaviour
 
             movement *= Time.deltaTime;
             transform.Translate(movement);
-            //SendMovementServerRPC(movement);
         }
     }
 
@@ -169,9 +166,7 @@ public class Player : NetworkBehaviour
         if (entity.gameObject.tag == "Points Blob")
         {            
             currentPoints.Value += 10;
-            //blobsEaten += 1;
-            
-            Debug.Log("CurrentPoints is:" + currentPoints.Value + " and client id is: " + OwnerClientId);
+            blobsEaten += 1;
             DespawnBlobsServerRPC(entity.gameObject.GetComponent<NetworkObject>().NetworkObjectId);
             
             // Update player stats
@@ -180,15 +175,13 @@ public class Player : NetworkBehaviour
         }
         else 
         { 
-            Debug.Log("CurrentPoints is:" + currentPoints + " and other points is : " + entity.gameObject.GetComponent<Player>().currentPoints);
             if(currentPoints.Value > (2*entity.gameObject.GetComponent<Player>().currentPoints.Value))
             {
-                //currentNumberOfKills += 1;
-                //PointsUpdateServerRPC(20);
                 currentPoints.Value += entity.gameObject.GetComponent<Player>().currentPoints.Value;
-                Debug.Log(currentPoints.Value + " OTTHERS " + entity.gameObject.GetComponent<Player>().currentPoints.Value);
-                entity.gameObject.GetComponent<Player>().Death();               
+                entity.gameObject.GetComponent<Player>().Death();
+
                 // Update player stats
+                currentNumberOfKills += 1;
                 UpdateSize();
                 UpdateSpeed();
             }
@@ -203,41 +196,12 @@ public class Player : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void PointsUpdateServerRPC(int points, ServerRpcParams serverRpcParams = default)
-    {
-        var client = NetworkManager.ConnectedClients[OwnerClientId];
-        Debug.Log("ClientID is " + OwnerClientId);
-        client.PlayerObject.gameObject.GetComponent<Player>().currentPoints.Value += points;
-    }
-
-    // Works with lag, as is the nature of this tupe of movement
-    [ServerRpc(RequireOwnership = false)]
-    public void SendMovementServerRPC(Vector3 movement, ServerRpcParams serverRpcParams = default)
-    {
-        if (NetworkManager.ConnectedClients.ContainsKey(OwnerClientId))
-        {
-            var client = NetworkManager.ConnectedClients[OwnerClientId];
-            client.PlayerObject.transform.Translate(movement);
-        }
-    }
-
-    [ServerRpc(RequireOwnership = false)]
     public void DespawnenPlayerServerRPC()
     {
         if (NetworkManager.ConnectedClients.ContainsKey(OwnerClientId))
         {
             var client = NetworkManager.ConnectedClients[OwnerClientId];
             Destroy(client.PlayerObject.gameObject);
-        }
-    }
-
-    [ClientRpc]
-    public void DespawnPlayerClientRPC(ulong id)
-    {
-        if(OwnerClientId == id)
-        {
-            var client = NetworkManager.ConnectedClients[OwnerClientId];
-            Destroy(client.PlayerObject);
         }
     }
 
