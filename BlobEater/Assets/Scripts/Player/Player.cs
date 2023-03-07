@@ -85,12 +85,21 @@ public class Player : NetworkBehaviour
     /// </summary>
     private void Move()
     {
+        UpdateSpeed();
         float inputX = UnityEngine.Input.GetAxis("Horizontal");
         float inputY = UnityEngine.Input.GetAxis("Vertical");
 
+        int directionX = 0;
+        int directionY = 0;
+
+        if (inputX > 0) { directionX= 1; }
+        if (inputY > 0) { directionY= 1; }
+        if (inputX < 0) { directionX= -1; }
+        if (inputY < 0) { directionY= -1; }
+
         if (inputX != 0.0 || inputY != 0.0)
         {
-            Vector3 movement = new Vector3(currentSpeed * inputX, currentSpeed * inputY, 0);
+            Vector3 movement = new Vector3(currentSpeed * directionX, currentSpeed * directionY, 0);
 
             movement *= Time.deltaTime;
             transform.Translate(movement);
