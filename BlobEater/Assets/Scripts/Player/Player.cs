@@ -186,10 +186,11 @@ public class Player : NetworkBehaviour
             UpdateSpeed();
         }
         else 
-        { 
-            if(currentPoints.Value > (2*entity.gameObject.GetComponent<Player>().currentPoints.Value))
+        {
+            float collidersPoints = entity.gameObject.GetComponent<Player>().currentPoints.Value;
+            if (currentPoints.Value > (2* collidersPoints) && (collidersPoints > 10 && currentPoints.Value > 10))
             {
-                currentPoints.Value += entity.gameObject.GetComponent<Player>().currentPoints.Value;
+                currentPoints.Value += collidersPoints;
                 entity.gameObject.GetComponent<Player>().Death();
 
                 // Update player stats

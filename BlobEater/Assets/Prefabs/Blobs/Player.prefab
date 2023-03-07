@@ -121,7 +121,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 5700254540035586360}
   virtualCamera: {fileID: 5700254541802711114}
-  currentPoints: 1
+  currentPoints:
+    m_InternalValue: 1
   textKills: {fileID: 0}
   textEaten: {fileID: 0}
 --- !u!114 &-8075407790564839642
