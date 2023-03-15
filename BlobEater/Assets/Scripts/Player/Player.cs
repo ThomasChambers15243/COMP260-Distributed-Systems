@@ -28,7 +28,13 @@ public class Player : NetworkBehaviour
     private float currentPoints = 10;
     private float currentSpeed;
     private float radius = 1;
-    private float baseSpeed = 1;
+    
+    // Data to calulate the players speed
+    // Max points is the largers amount of points a player can get before
+    // their speed is not affected by points gained
+    private float maxPointsForSpeedGain = 1500f;
+    // Range is the range of values to be mapped inbetween
+    private float speedXValueRange = 15f;
     
     // Player Ui
     private int currentNumberOfKills = 0;
@@ -87,8 +93,7 @@ public class Player : NetworkBehaviour
         {
             Vector3 movement = new Vector3(currentSpeed * inputX, currentSpeed * inputY, 0);
 
-            movement *= Time.deltaTime;
-            SendMovementServerRPC(movement);
+            SendMovementServerRPC(inputX * currentSpeed, inputY * currentSpeed);
         }
     }
 
@@ -151,8 +156,23 @@ public class Player : NetworkBehaviour
     /// <returns>Float value speed</returns>
     private float CalculateSpeed()
     {
-        float baseX = baseSpeed + (currentPoints * 0.01f);
-        return 10f * Mathf.Pow(baseSpeed, -1f);
+        //float speedFactor = MathF.Pow(baseSpeed, (currentPoints * 0.001f));        
+        if(currentPoints < 10) { currentPoints = 10; }
+        float divider = maxPointsForSpeedGain / speedXValueRange;
+        float xValue = 1;
+        // If points reach greater than cieling stop speed decline
+        if (currentPoints < maxPointsForSpeedGain) 
+        {
+            xValue = currentPoints / divider;
+        }
+        else
+        {
+            xValue = 15;
+        }
+
+        float speed = -5f * MathF.Log10(xValue) + 10;
+        Debug.Log(speed);
+        return speed;
     }
 
     /// <summary>
@@ -203,11 +223,14 @@ public class Player : NetworkBehaviour
 
     // Works with lag, as is the nature of this tupe of movement
     [ServerRpc(RequireOwnership = false)]
-    public void SendMovementServerRPC(Vector3 movement, ServerRpcParams serverRpcParams = default)
+    public void SendMovementServerRPC(float inputX, float inputY, ServerRpcParams serverRpcParams = default)
     {
         if (NetworkManager.ConnectedClients.ContainsKey(OwnerClientId))
         {
             var client = NetworkManager.ConnectedClients[OwnerClientId];
+            Vector3 movement = new Vector3(currentSpeed * inputX, currentSpeed * inputY, 0);
+            movement *= NetworkManager.ServerTime.FixedDeltaTime;
+            movement = movement / 15;
             client.PlayerObject.transform.Translate(movement);
         }
     }
