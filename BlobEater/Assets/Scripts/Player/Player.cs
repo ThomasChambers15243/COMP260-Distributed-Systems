@@ -36,6 +36,13 @@ public class Player : NetworkBehaviour
     private int blobsEaten = 0;
     public Text textEaten;
 
+    // Data to calulate the players speed
+    // Max points is the largers amount of points a player can get before
+    // their speed is not affected by points gained
+    private float maxPointsForSpeedGain = 1500f;
+    // Range is the range of values to be mapped inbetween
+    private float speedXValueRange = 15f;
+
     // Player Database Data
     private float highScore;
     private int totalKills;
@@ -156,8 +163,23 @@ public class Player : NetworkBehaviour
     /// <returns>Float value speed</returns>
     private float CalculateSpeed()
     {
-        float baseX = baseSpeed + (currentPoints.Value * 0.01f);
-        return 10f * Mathf.Pow(baseSpeed, -1f);
+        //float speedFactor = MathF.Pow(baseSpeed, (currentPoints * 0.001f));        
+        if (currentPoints.Value < 10) { currentPoints.Value = 10; }
+        float divider = maxPointsForSpeedGain / speedXValueRange;
+        float xValue = 1;
+        // If points reach greater than cieling stop speed decline
+        if (currentPoints.Value < maxPointsForSpeedGain)
+        {
+            xValue = currentPoints.Value / divider;
+        }
+        else
+        {
+            xValue = 15;
+        }
+        // https://www.desmos.com/calculator/93k7dmnj3m
+        // Negitive logarithmic function to map points to speed non-linearly
+        float speed = -5f * MathF.Log10(xValue) + 10;
+        return speed;
     }
 
     /// <summary>
