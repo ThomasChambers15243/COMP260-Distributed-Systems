@@ -90,9 +90,7 @@ public class Player : NetworkBehaviour
         float inputY = UnityEngine.Input.GetAxis("Vertical");
 
         if (inputX != 0.0 || inputY != 0.0)
-        {
-            Vector3 movement = new Vector3(currentSpeed * inputX, currentSpeed * inputY, 0);
-
+        {            
             SendMovementServerRPC(inputX * currentSpeed, inputY * currentSpeed);
         }
     }
@@ -169,9 +167,9 @@ public class Player : NetworkBehaviour
         {
             xValue = 15;
         }
-
+        // https://www.desmos.com/calculator/93k7dmnj3m
+        // Negitive logarithmic function to map points to speed non-linearly
         float speed = -5f * MathF.Log10(xValue) + 10;
-        Debug.Log(speed);
         return speed;
     }
 
