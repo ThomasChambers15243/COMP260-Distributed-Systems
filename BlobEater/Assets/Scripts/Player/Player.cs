@@ -166,7 +166,7 @@ public class Player : NetworkBehaviour
         //float speedFactor = MathF.Pow(baseSpeed, (currentPoints * 0.001f));        
         if (currentPoints.Value < 10) { currentPoints.Value = 10; }
         float divider = maxPointsForSpeedGain / speedXValueRange;
-        float xValue = 1;
+        float xValue;
         // If points reach greater than cieling stop speed decline
         if (currentPoints.Value < maxPointsForSpeedGain)
         {
