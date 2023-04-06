@@ -95,13 +95,12 @@ public class PassiveBlobSpawner : MonoBehaviour
     }
 
     /// <summary>
-    /// Spawns in one blob
+    /// Spawns in one points blob
     /// </summary>
     public void spawnBlob()
     {
         Vector2 spawnPos = new Vector2(UnityEngine.Random.Range(-spawnRange, spawnRange), UnityEngine.Random.Range(-spawnRange, spawnRange));
-        // Not networked way of spawning
-        // blobs.Add(Instantiate(passivePointBlob, spawnPos, Quaternion.identity));
+        
         // Networked Spawning
         GameObject spawnedBlob = Instantiate(passivePointBlob, spawnPos, Quaternion.identity);
         blobs.Add(spawnedBlob);
