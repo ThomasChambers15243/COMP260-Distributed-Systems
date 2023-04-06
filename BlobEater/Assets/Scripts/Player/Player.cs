@@ -28,7 +28,6 @@ public class Player : NetworkBehaviour
     private NetworkVariable<float> currentPoints = new NetworkVariable<float>(1,NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     private float currentSpeed;
     private float radius = 1;
-    private float baseSpeed = 1;
     
     // Player Ui
     private int currentNumberOfKills = 0;
@@ -59,17 +58,13 @@ public class Player : NetworkBehaviour
         targetOrthoSize = currentOrthoSize;
     }
 
-    public override void OnNetworkSpawn()
-    {
-        currentPoints.Value = 10f;
-        base.OnNetworkSpawn();
-    }
-
     private void FixedUpdate()
     {
+        // Ensures independent control from client
         if (!IsOwner) return;
         if(IsOwner)
         {
+            // Sets up the clients own, personal camera
             virtualCamera.gameObject.SetActive(true);
         }
         Move();        
@@ -95,6 +90,7 @@ public class Player : NetworkBehaviour
         float inputX = UnityEngine.Input.GetAxis("Horizontal");
         float inputY = UnityEngine.Input.GetAxis("Vertical");
 
+        // If there is any input, calculate movement vector and translate player client side
         if (inputX != 0.0 || inputY != 0.0)
         {
             Vector3 movement = new Vector3(currentSpeed * inputX, currentSpeed * inputY, 0);
@@ -143,6 +139,7 @@ public class Player : NetworkBehaviour
         GameObject textKills = canvas.transform.GetChild(0).gameObject;
         GameObject textEaten = canvas.transform.GetChild(1).gameObject;
 
+        // Write new text to the players UI
         textKills.GetComponent<Text>().text = string.Concat("Kills: ", currentNumberOfKills);
         textEaten.GetComponent<Text>().text = string.Concat("Blbos Eaten: ", blobsEaten);
     }
@@ -150,7 +147,7 @@ public class Player : NetworkBehaviour
     /// <summary>
     /// Calculates the player's size relitive to the player's points
     /// </summary>
-    /// <returns></returns>
+    /// <returns>Float value of the new raduis<</returns>
     private float CalculateSize()
     {
         float newRadius = radius + (10/currentPoints.Value);
@@ -163,10 +160,14 @@ public class Player : NetworkBehaviour
     /// <returns>Float value speed</returns>
     private float CalculateSpeed()
     {
-        //float speedFactor = MathF.Pow(baseSpeed, (currentPoints * 0.001f));        
+        // Sets a minimium points so that the functions is bound
         if (currentPoints.Value < 10) { currentPoints.Value = 10; }
+
         float divider = maxPointsForSpeedGain / speedXValueRange;
+
+        // X postion on curve 
         float xValue;
+
         // If points reach greater than cieling stop speed decline
         if (currentPoints.Value < maxPointsForSpeedGain)
         {
@@ -174,6 +175,7 @@ public class Player : NetworkBehaviour
         }
         else
         {
+            // Maximium value means that the speed can't increase
             xValue = 15;
         }
         // https://www.desmos.com/calculator/93k7dmnj3m
@@ -189,9 +191,12 @@ public class Player : NetworkBehaviour
     public void Kill(Collision2D entity)
     {
         if (entity.gameObject.tag == "Points Blob")
-        {            
+        {   
+            // Add points to player
             currentPoints.Value += 10;
             blobsEaten += 1;
+
+            // Remove blob so a new one can be spawned in
             DespawnBlobsServerRPC(entity.gameObject.GetComponent<NetworkObject>().NetworkObjectId);
             
             // Update player stats
@@ -202,6 +207,7 @@ public class Player : NetworkBehaviour
         { 
             if(currentPoints.Value > (2*entity.gameObject.GetComponent<Player>().currentPoints.Value))
             {
+                // Update the player's points with the value of the player they colllided with
                 currentPoints.Value += entity.gameObject.GetComponent<Player>().currentPoints.Value;
                 entity.gameObject.GetComponent<Player>().Death();
 
@@ -213,13 +219,19 @@ public class Player : NetworkBehaviour
         }
     }
 
-
+    /// <summary>
+    /// Remove network object from the game
+    /// </summary>
+    /// <param name="id">Clients Id</param>
     [ServerRpc]
     public void DespawnBlobsServerRPC(ulong id)
     {
         GetNetworkObject(id).Despawn(true);
     }
 
+    /// <summary>
+    /// Remove connect player
+    /// </summary>
     [ServerRpc(RequireOwnership = false)]
     public void DespawnenPlayerServerRPC()
     {
