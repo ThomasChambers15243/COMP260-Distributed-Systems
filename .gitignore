@@ -84,3 +84,9 @@ MidiProject/Temp
 MidiProject/Logs
 MidiProject/Library
 
+BlobEater/Library
+BlobEater/Logs
+BlobEater/obj
+BlobEater/Packages
+BlobEater/ProjectSettings
+BlobEater/UserSettings
